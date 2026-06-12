@@ -1182,7 +1182,7 @@ class Line extends OpMode {
 
     @Override
     public void init() {
-        follower.setStartingPose(new Pose(72, 72));
+        follower.setStartingPose(new Pose(0, 0));
     }
 
     /** This initializes the Follower and creates the forward and backward Paths. */
@@ -1196,33 +1196,28 @@ class Line extends OpMode {
         drawCurrent();
     }
 
+    private boolean pathStarted = false;
+
     @Override
     public void start() {
+        follower.setStartingPose(new Pose(72, 72));
         follower.activateAllPIDFs();
-        forwards = new Path(new BezierLine(new Pose(72,72), new Pose(DISTANCE + 72,72)));
-        forwards.setConstantHeadingInterpolation(0);
-        backwards = new Path(new BezierLine(new Pose(DISTANCE + 72,72), new Pose(72,72)));
-        backwards.setConstantHeadingInterpolation(0);
-        follower.followPath(forwards);
+
+        Path path = new Path(new BezierLine(new Pose(72, 72), new Pose(DISTANCE + 72, 72)));
+        path.setConstantHeadingInterpolation(0);
+        follower.followPath(path);
+        pathStarted = true;
     }
 
-    /** This runs the OpMode, updating the Follower as well as printing out the debug statements to the Telemetry */
     @Override
     public void loop() {
         follower.update();
         drawCurrentAndHistory();
 
-        if (!follower.isBusy()) {
-            if (forward) {
-                forward = false;
-                follower.followPath(backwards);
-            } else {
-                forward = true;
-                follower.followPath(forwards);
-            }
+        if (pathStarted && !follower.isBusy()) {
+            requestOpModeStop();
         }
 
-        telemetryM.debug("Driving Forward?: " + forward);
         telemetryM.update(telemetry);
     }
 }
@@ -1252,7 +1247,7 @@ class CentripetalTuner extends OpMode {
         follower.setStartingPose(new Pose(72, 72));
     }
 
-    /**
+    /*
      * This initializes the Follower and creates the forward and backward Paths.
      * Additionally, this initializes the Panels telemetry.
      */
