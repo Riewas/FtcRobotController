@@ -22,7 +22,7 @@ public class TestIntake extends LinearOpMode {
     public void runOpMode() {
 
         // Hardware Map
-        intakeMotor = hardwareMap.get(DcMotor.class, "intake");
+        intakeMotor = hardwareMap.get(DcMotor.class, "intake_motor");
 
         // Motor Direction — change to REVERSE if intake spins the wrong way
         intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
